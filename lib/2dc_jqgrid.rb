@@ -345,7 +345,7 @@ module Jqgrid
           end
           options.chop! << %Q/",/
         else # :size => 30, :rows => 5, :maxlength => 20, ...
-          if couple[1].instance_of?(Fixnum) || couple[1] == 'true' || couple[1] == 'false' || couple[1] == true || couple[1] == false
+          if couple[1].instance_of?(Fixnum) || couple[1] == 'true' || couple[1] == 'false' || couple[1] == true || couple[1] == false || couple[1] =~ /function/
             options << %Q/#{couple[0]}:#{couple[1]},/
           else
             options << %Q/#{couple[0]}:"#{couple[1]}",/            
@@ -384,7 +384,10 @@ module JqgridJson
   private
   
   def get_atr_value(elem, atr, couples)
-    if atr.to_s.include?('.')
+    if atr.kind_of? Proc 
+      value = atr.call(elem)
+      # value = eval(atr[:eval])
+    elsif atr.to_s.include?('.')
       value = get_nested_atr_value(elem, atr.to_s.split('.').reverse) 
     else
       value = couples[atr]
